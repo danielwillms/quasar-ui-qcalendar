@@ -1,14 +1,15 @@
 const toCamelCase = str => str.replace(/(-\w)/g, m => m[ 1 ].toUpperCase())
-let $listeners, $emit
 
 /**
  * Used by render function to set up specialized mouse events
  * The mouse event will not be set if there is no listener for it to key callbacks to a minimum
+ * @param {VTTCue.emit} emit
+ * @param {Array} listeners on the instance
  * @param {Object} events undecorated events (ie: 'click-day' will be transformed to 'onClickDay')
  * @param {Function} getEvent callback for event
  * @returns {Object} contents of decorated mouse events
  */
-export function getMouseEventHandlers (events, getEvent) {
+export function getMouseEventHandlers (emit, listeners, events, getEvent) {
   const on = {}
   for (const eventName in events) {
     const eventOptions = events[ eventName ]
@@ -17,14 +18,14 @@ export function getMouseEventHandlers (events, getEvent) {
     const eventKey = toCamelCase('on-' + eventName)
 
     // make sure listeners has been set up properly
-    if ($listeners === undefined) {
+    if (listeners === undefined) {
       // someone forgot to call the default function export
-      console.warn('$listeners has not been set up')
+      console.warn('listeners has not been set up')
       return
     }
 
     // if there is no listener for this, then don't process it
-    if ($listeners.value[ eventKey ] === undefined) continue
+    if (listeners.value[ eventKey ] === undefined) continue
 
     // https://vuejs.org/v2/guide/render-function.html#Event-amp-Key-Modifiers
     // const prefix = eventOptions.passive ? '&' : ((eventOptions.once ? '~' : '') + (eventOptions.capture ? '!' : ''))
@@ -42,7 +43,7 @@ export function getMouseEventHandlers (events, getEvent) {
         if (eventOptions.stop) {
           mouseEvent.stopPropagation()
         }
-        $emit(eventName, getEvent(mouseEvent, eventName))
+        emit(eventName, getEvent(mouseEvent, eventName))
       }
 
       return eventOptions.result
@@ -66,12 +67,14 @@ export function getMouseEventHandlers (events, getEvent) {
 
 /**
  *
+ * @param {VTTCue.emit} emit
+ * @param {Array} listeners on the instance
  * @param {String} suffix
  * @param {Function} getEvent The callback
  * @returns {Object} contains decorated mouse events based on listeners of that event and for each a callback
  */
-export function getDefaultMouseEventHandlers (suffix, getEvent) {
-  return getMouseEventHandlers(getMouseEventName(suffix), getEvent)
+export function getDefaultMouseEventHandlers (emit, listeners, suffix, getEvent) {
+  return getMouseEventHandlers(emit, listeners, getMouseEventName(suffix), getEvent)
 }
 
 /**
@@ -109,11 +112,15 @@ export function getRawMouseEvents (suffix) {
  * @param {Array} listeners on the instance
  */
 export default function (emit, listeners) {
-  $emit = emit
-  $listeners = listeners
+  const $emit = emit;
+  const $listeners = listeners;
   return {
-    getMouseEventHandlers,
-    getDefaultMouseEventHandlers,
+    getMouseEventHandlers: (events, getEvent) => {
+      return getMouseEventHandlers($emit, $listeners, events, getEvent)
+    },
+    getDefaultMouseEventHandlers: (suffix, getEvent) => {
+      return getDefaultMouseEventHandlers($emit, $listeners, suffix, getEvent);
+    },
     getMouseEventName,
     getRawMouseEvents
   }
