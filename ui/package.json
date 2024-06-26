@@ -1,7 +1,7 @@
 {
-  "name": "@quasar/quasar-ui-qcalendar",
-  "version": "4.0.0-beta.19",
-  "author": "Jeff Galbraith <jeff@quasar.dev>",
+  "name": "@daniel.willms/quasar-ui-qcalendar",
+  "version": "4.0.0-beta.19-fork",
+  "author": "Daniel Willms <daniel.willms@glave.de>",
   "description": "QCalendar - Day/Month/Week Calendars, Popups, Date Pickers, Schedules, Agendas, Planners and Tasks for your Vue Apps",
   "license": "MIT",
   "module": "dist/index.esm.js",
@@ -26,16 +26,12 @@
     "build:api": "node build/build.api.js",
     "test": "jest --runInBand --no-cache"
   },
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/hawkeye64"
-  },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/quasarframework/quasar-ui-qcalendar.git"
+    "url": "git+https://github.com/danielwillms/quasar-ui-qcalendar.git"
   },
   "bugs": "https://github.com/quasarframework/quasar-ui-qcalendar/issues",
   "homepage": "https://github.com/quasarframework/quasar-ui-qcalendar",
